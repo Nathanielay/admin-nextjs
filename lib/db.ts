@@ -1,11 +1,9 @@
 import "server-only";
 import { drizzle } from "drizzle-orm/mysql2";
 import { sql } from "drizzle-orm";
-import mysql from "mysql2/promise";
 import * as schema from "@/drizzle/schema";
 
 const globalForDb = globalThis as typeof globalThis & {
-  _mysqlPool?: mysql.Pool;
   _db?: ReturnType<typeof drizzle>;
 };
 
@@ -15,17 +13,11 @@ function getDb() {
     if (!connectionString) {
       throw new Error("DATABASE_URL is not set");
     }
-    const pool =
-      globalForDb._mysqlPool ??
-      mysql.createPool({
-        uri: connectionString,
-        connectionLimit: 10,
-      });
-
-    if (!globalForDb._mysqlPool) {
-      globalForDb._mysqlPool = pool;
-    }
-    globalForDb._db = drizzle(pool, { schema, mode: "default" });
+    globalForDb._db = drizzle({
+      connection: connectionString,
+      schema,
+      mode: "default",
+    });
   }
   return globalForDb._db;
 }

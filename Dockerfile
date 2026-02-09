@@ -29,7 +29,6 @@ COPY --from=deps /app/node_modules ./node_modules
 COPY package.json pnpm-lock.yaml ./
 COPY drizzle.config.ts ./
 COPY drizzle ./drizzle
-COPY migrations ./migrations
 COPY tsconfig.json ./
 
 EXPOSE 3000
